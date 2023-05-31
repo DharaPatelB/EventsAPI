@@ -96,9 +96,22 @@ namespace EventsAPI.Controllers
                 Pages = (int)pageCount
             };
             return Ok(responce);
-        }
+        }      
 
-        /* [HttpPut]
+       [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteEvent([FromRoute] Guid id)
+        {
+            var @event = await dbContext.Event.FindAsync(id);
+            if (@event != null)
+            {
+                dbContext.Remove(@event);
+                await dbContext.SaveChangesAsync();
+                return Ok(@event);
+            }
+            return NotFound();
+        }
+          /* [HttpPut]
          [Route("{id:guid}")]
          public async Task<IActionResult> Update(Guid id, Event model)
          {
@@ -121,64 +134,8 @@ namespace EventsAPI.Controllers
              }
              return Ok();
 
-         }
-
-            [HttpPut]
-              [Route("{id:guid}")]
-              public  IActionResult UpdateEvent([FromForm] Guid id, Event model)
-              {
-                  var status = new Status();
-                  if (!ModelState.IsValid)
-                  {
-                      status.StatusCode = 0;
-                      status.Message = "Please pass the valid data";
-                      return Ok(status);
-                  }
-                  if (model.ImageFile != null)
-                  {
-                      var fileResult = _fileService.SaveImage(model.ImageFile);
-                      if (fileResult.Item1 == 1)
-                      {
-                      model.Picture = fileResult.Item2; // getting name of image
-                      }
-                      var eventResult =  _eventRepo.Update(model);
-                      if (eventResult)
-                      {
-                          status.StatusCode = 1;
-                          status.Message = "Added successfully";
-                      }
-                      else
-                      {
-                          status.StatusCode = 0;
-                          status.Message = "Error on adding product";
-
-                      }
-                  }
-                  return Ok(status);
-
-               }
-
-
-          */
-
-
-       
-
-        [HttpDelete]
-        [Route("{id:guid}")]
-        public async Task<IActionResult> DeleteEvent([FromRoute] Guid id)
-        {
-            var @event = await dbContext.Event.FindAsync(id);
-            if (@event != null)
-            {
-                dbContext.Remove(@event);
-                await dbContext.SaveChangesAsync();
-                return Ok(@event);
-            }
-            return NotFound();
-        }
-
-
+         }       
+          */    
     }
 }
 
